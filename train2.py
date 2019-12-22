@@ -84,6 +84,7 @@ for epoch in range(epochs):
         avg_loss_g.update(loss_g)
 
         if i % print_freq == 0:
+            print('epoch {}/{}'.format(epoch, i))
             print('loss: lossg {0} lossd{1} avgg{2} avgd{3}'.format(avg_loss_g.val, avg_loss_d.val, avg_loss_g.avg, avg_loss_d.avg))
-        if loss_g < min_loss_g and loss_d < min_loss_d:
-            torch.save((net_g, net_d), check)
+            if loss_g < min_loss_g and loss_d < min_loss_d:
+                torch.save((net_g, net_d), check)
