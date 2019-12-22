@@ -4,8 +4,8 @@ from torch.utils.data import DataLoader
 from data_gen import DatasetFromFolder
 from os.path import join
 import os
-from model import define_G, define_D, GANLoss
-from utils import AverageMeter
+from model import define_G, define_D, GANLoss, device
+from utils import AverageMeter, visualize
 
 root = 'data/cityscapes/'
 mode = 'a2b'
@@ -14,12 +14,11 @@ print_freq = 10
 weight = 10
 epochs = 1000
 lr = 0.0001
-batch_size = 64
+batch_size = 32
 input_channel = 3
 output_channel = 3
 ngf = 64
 ndf = 64
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 check = 'best_checkpoint.tar'
 
 train_set = DatasetFromFolder(join(root, 'train'), mode)
@@ -44,47 +43,58 @@ criterionMSE = nn.MSELoss().to(device)
 optimzer_g = torch.optim.Adam(net_g.parameters(), lr)
 optimzer_d = torch.optim.Adam(net_d.parameters(), lr)
 
-for epoch in range(epochs):
-    avg_loss_g = AverageMeter()
-    avg_loss_d = AverageMeter()
-    min_loss_g = float('inf')
-    min_loss_d = float('inf')
-    for i, data in enumerate(train_loader):
-        img_a, img_b = data[0].to(device), data[1].to(device)
-        fake_b = net_g(img_a)
 
-        # update discriminator
-        optimzer_d.zero_grad()
+def train():
+    for epoch in range(epochs):
+        avg_loss_g = AverageMeter()
+        avg_loss_d = AverageMeter()
+        min_loss_g = float('inf')
+        min_loss_d = float('inf')
+        for i, data in enumerate(train_loader):
+            img_a, img_b = data[0].to(device), data[1].to(device)
+            fake_b = net_g(img_a)
 
-        fake = torch.cat((img_a, fake_b), 1)
-        out_fake = net_d(fake.detach())
-        loss_fake = criterionGAN(out_fake, False)
+            # update discriminator
+            optimzer_d.zero_grad()
 
-        real = torch.cat((img_a, img_b), 1)
-        out_real = net_d(real)
-        loss_real = criterionGAN(out_real, True)
+            fake = torch.cat((img_a, fake_b), 1)
+            out_fake = net_d(fake.detach())
+            loss_fake = criterionGAN(out_fake, False)
 
-        loss_d = (loss_fake + loss_real) * 0.5
-        loss_d.backward()
-        optimzer_d.step()
+            real = torch.cat((img_a, img_b), 1)
+            out_real = net_d(real)
+            loss_real = criterionGAN(out_real, True)
 
-        # update generator
-        optimzer_g.zero_grad()
+            loss_d = (loss_fake + loss_real) * 0.5
+            loss_d.backward()
+            optimzer_d.step()
 
-        fake = torch.cat((img_a, fake_b), 1)
-        out_fake = net_d(fake)
-        loss_g = criterionGAN(out_fake, True)
+            # update generator
+            optimzer_g.zero_grad()
 
-        loss_L1 = criterionL1(img_b, fake_b) * weight
-        loss_g = loss_g + loss_L1
-        loss_g.backward()
-        optimzer_g.step()
+            fake = torch.cat((img_a, fake_b), 1)
+            out_fake = net_d(fake)
+            loss_g = criterionGAN(out_fake, True)
 
-        avg_loss_d.update(loss_d)
-        avg_loss_g.update(loss_g)
+            loss_L1 = criterionL1(img_b, fake_b) * weight
+            loss_g = loss_g + loss_L1
+            loss_g.backward()
+            optimzer_g.step()
 
-        if i % print_freq == 0:
-            print('epoch {}/{}'.format(epoch, i))
-            print('loss: lossg {0} lossd{1} avgg{2} avgd{3}'.format(avg_loss_g.val, avg_loss_d.val, avg_loss_g.avg, avg_loss_d.avg))
-            if loss_g < min_loss_g and loss_d < min_loss_d:
-                torch.save((net_g, net_d), check)
+            avg_loss_d.update(loss_d)
+            avg_loss_g.update(loss_g)
+
+            if i % print_freq == 0:
+                print('epoch {}/{}'.format(epoch, i))
+                print('loss: lossg {0} lossd{1} avgg{2} avgd{3}'.format(avg_loss_g.val, avg_loss_d.val, avg_loss_g.avg, avg_loss_d.avg))
+                if loss_g < min_loss_g and loss_d < min_loss_d:
+                    torch.save((net_g, net_d), check)
+        vis()
+
+
+def vis():
+    visualize(net_g, train_loader)
+
+
+if __name__ == '__main__':
+    train()

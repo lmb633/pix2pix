@@ -1,6 +1,8 @@
 import numpy as np
 from PIL import Image
 import torch
+from model import device
+
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])
@@ -55,3 +57,12 @@ def save_checkpoint(epoch, epochs_since_improvement, model, optimizer, hmean, is
     # If this checkpoint is the best so far, store a copy so it doesn't get overwritten by a worse checkpoint
     if is_best:
         torch.save(state, 'BEST_checkpoint.tar')
+
+
+def visualize(model, dataloader):
+    for _, data in enumerate(dataloader):
+        img_a, img_b = data[0].to(device), data[1].to(device)
+        fake_b = model(img_a)
+        for i, fake_img in enumerate(fake_b):
+            save_img(fake_img, 'images/{0}.jpg'.format(i))
+            save_img(img_b[i], 'images/{0}_real.jpg'.format(i))

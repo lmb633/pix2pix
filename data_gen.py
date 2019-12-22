@@ -42,8 +42,8 @@ class DatasetFromFolder(data.Dataset):
         a = a[:, h_offset:h_offset + 256, w_offset:w_offset + 256]
         b = b[:, h_offset:h_offset + 256, w_offset:w_offset + 256]
 
-        # a = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(a)
-        # b = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(b)
+        a = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(a)
+        b = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(b)
 
         if random.random() < 0.5:
             idx = [i for i in range(a.size(2) - 1, -1, -1)]
