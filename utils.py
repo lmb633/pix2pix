@@ -64,5 +64,5 @@ def visualize(model, dataloader):
         img_a, img_b = data[0].to(device), data[1].to(device)
         fake_b = model(img_a)
         for i, fake_img in enumerate(fake_b):
-            save_img(fake_img, 'images/{0}.jpg'.format(i))
-            save_img(img_b[i], 'images/{0}_real.jpg'.format(i))
+            save_img(fake_img.cpu(), 'images/{0}.jpg'.format(i))
+            save_img(img_b[i].cpu(), 'images/{0}_real.jpg'.format(i))
