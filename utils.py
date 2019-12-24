@@ -1,7 +1,8 @@
 import numpy as np
-from PIL import Image
 import torch
-from model import device
+from PIL import Image
+
+from old.model import device
 
 
 def is_image_file(filename):
