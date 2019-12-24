@@ -4,9 +4,10 @@ from torch.utils.data import DataLoader
 from data_gen import DatasetFromFolder
 from os.path import join
 import os
-from model import define_G, define_D, GANLoss, device
+from models import G_net, D_net, PatchLoss
 from utils import AverageMeter, visualize
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 root = 'data/cityscapes/'
 mode = 'a2b'
 
@@ -33,10 +34,10 @@ if os.path.exists(check):
     net_d = checkpoint[1]
 else:
     print('train from init')
-    net_g = define_G(input_channel, output_channel, ngf, 'batch', False, 'normal', 0.02).to(device)
-    net_d = define_D(input_channel + output_channel, ndf, 'basic').to(device)
+    net_g = G_net(input_channel, output_channel).to(device)
+    net_d = D_net(input_channel + output_channel, ndf).to(device)
 
-criterionGAN = GANLoss().to(device)
+criterionGAN = PatchLoss().to(device)
 criterionL1 = nn.L1Loss().to(device)
 criterionMSE = nn.MSELoss().to(device)
 
