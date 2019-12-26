@@ -20,6 +20,8 @@ input_channel = 3
 output_channel = 3
 ngf = 64
 ndf = 64
+g_layer = 9
+d_layer = 3
 check = 'best_checkpoint.tar'
 
 train_set = DatasetFromFolder(join(root, 'train'), mode)
@@ -34,8 +36,8 @@ if os.path.exists(check):
     net_d = checkpoint[1]
 else:
     print('train from init')
-    net_g = G_net(input_channel, output_channel).to(device)
-    net_d = D_net(input_channel + output_channel, ndf).to(device)
+    net_g = G_net(input_channel, output_channel, ngf, g_layer).to(device)
+    net_d = D_net(input_channel + output_channel, ndf, d_layer).to(device)
 
 criterionGAN = PatchLoss().to(device)
 criterionL1 = nn.L1Loss().to(device)
