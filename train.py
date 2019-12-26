@@ -4,10 +4,9 @@ from torch.utils.data import DataLoader
 from data_gen import DatasetFromFolder
 from os.path import join
 import os
-from models import G_net, D_net, PatchLoss
+from models import G_net, D_net, PatchLoss, device
 from utils import AverageMeter, visualize
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 root = 'data/cityscapes/'
 mode = 'a2b'
 

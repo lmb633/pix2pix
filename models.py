@@ -1,9 +1,8 @@
 import torch
 import torch.nn as nn
 from torchvision.models.resnet import BasicBlock
-from torch.nn import init
-import functools
-from torch.optim import lr_scheduler
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 class G_net(nn.Module):
@@ -108,7 +107,7 @@ class PatchLoss(nn.Module):
     def get_target_tensor(self, x, flag):
         flag = 1.0 if flag is True else 0.0
         tensor = torch.tensor(flag)
-        return tensor.expand_as(x)
+        return tensor.expand_as(x).to(device)
 
     def forward(self, x, flag):
         tensor = self.get_target_tensor(x, flag)
@@ -126,5 +125,5 @@ if __name__ == '__main__':
     output = dnet(input)
     print(output.shape)
     print(output)
-    loss = criterian(output, True)
+    loss = criterian(output, False)
     print(loss)
