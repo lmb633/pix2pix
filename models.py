@@ -20,12 +20,19 @@ class G_net(nn.Module):
 
     def forward(self, x):
         x = self.inconv(x)
+        print(1, x.shape)
         x = self.down1(x)
+        print(2, x.shape)
         x = self.down2(x)
+        print(3, x.shape)
         x = self.resnet(x)
+        print(3, x.shape)
         x = self.up1(x)
+        print(2, x.shape)
         x = self.up2(x)
+        print(1, x.shape)
         x = self.outconv(x)
+        print(1, x.shape)
         return x
 
 
@@ -118,12 +125,11 @@ if __name__ == '__main__':
     gnet = G_net(reslayer=2)
     dnet = D_net()
     criterian = PatchLoss()
-    input = torch.randn([1, 3, 112, 112])
+    input = torch.randn([1, 3, 111, 111])
     print(input.shape)
     output = gnet(input)
     print(output.shape)
     output = dnet(input)
     print(output.shape)
-    print(output)
     loss = criterian(output, False)
     print(loss)
