@@ -6,4 +6,4 @@
 <br>
 ![](https://github.com/lmb633/pix2pix/blob/master/images/4.jpg) ![](https://github.com/lmb633/pix2pix/blob/master/images/4_real.jpg)<br>
 <br>
-![](https://github.com/lmb633/pix2pix/blob/master/images/16.jpg) ![](https://github.com/lmb633/pix2pix/blob/master/images/16_real.jpg)<br>
+![](https://github.com/lmb633/pix2pix/blob/master/images/16_out.jpg) ![](https://github.com/lmb633/pix2pix/blob/master/images/16_img.jpg)<br>
